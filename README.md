@@ -7,4 +7,6 @@ using command line for git and github
 3. git commint -m "enter your messages"
 4. git push
 5. git pull
+6. git merge
+7. git clone
    like this
