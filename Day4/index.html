@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./output.css" rel="stylesheet" />
+    <script src="./script.js"></script>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <div class="bg-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+
+            <h1 class="text-2xl font-semibold">E-commerce Store</h1>
+
+            <nav class="hidden md:flex space-x-4">
+                <a href="#" class="text-gray-600 hover:text-black">Home</a>
+                <a href="#" class="text-gray-600 hover:text-black">Shop</a>
+                <a href="#" class="text-gray-600 hover:text-black">Categories</a>
+                <a href="#" class="text-gray-600 hover:text-black">Contact</a>
+            </nav>
+            <div class="md:flex items-center space-x-4">
+                <div class="relative">
+                    <input id="searchInput" type="text" placeholder="Search"
+                        class="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner Section -->
+    <section class="container mx-auto my-4">
+        <div class="grid  gap-4">
+            <div class="bg-white rounded-md shadow-md overflow-hidden">
+                <img src="./photo/banner-for-e.webp" alt="Banner 1" class="w-full h-auto rounded-md mb-4">
+                <p class="text-gray-600">Special Offer: 20% off on Electronics</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- <section class="container mx-auto mt-4">
+        <h2 class="text-xl font-semibold mb-2">Today's Deals</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-md shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Product 1</h3>
+                <p>Description of Product 1.</p>
+                <p>Price: $50</p>
+                <p>Discount: 20%</p>
+                <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Add to Cart</button>
+            </div>
+
+            <div class="bg-white p-4 rounded-md shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Product 2</h3>
+                <p>Description of Product 2.</p>
+                <p>Price: $80</p>
+                <p>Discount: 15%</p>
+                <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Add to Cart</button>
+            </div>
+
+            <div class="bg-white p-4 rounded-md shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Product 3</h3>
+                <p>Description of Product 3.</p>
+                <p>Price: $120</p>
+                <p>Discount: 30%</p>
+                <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Add to Cart</button>
+            </div>
+
+            <div class="bg-white p-4 rounded-md shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Product 4</h3>
+                <p>Description of Product 4 .</p>
+                <p>Price: $220</p>
+                <p>Discount: 50%</p>
+                <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Add to Cart</button>
+            </div>
+        </div>
+    </section> -->
+
+
+    <section class="bg-gray-200 py-4">
+        <div class="container mx-auto">
+            <h2 class="text-xl font-semibold mb-2">Special Offers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-md shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Huawei P30</h3>
+                    <p>Description of Offer 1.Huawei’s re-badged P30 Pro New Edition was officially unveiled yesterday
+                        in Germany and now the device has made its way to the UK</p>
+                    <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Shop Now</button>
+                </div>
+                <div class="bg-white p-4 rounded-md shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Microsoft Surface Laptop 4</h3>
+                    <p>Style and speed. Stand out on HD video calls backed by Studio Mics. Capture ideas on the vibrant
+                        touchscreen.</p>
+                    <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Shop Now</button>
+                </div>
+
+                <div class="bg-white p-4 rounded-md shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Infinix INBOOK</h3>
+                    <p>Infinix Inbook X1 Ci3 10th 8GB 256GB 14 Win10 Grey – 1 Year Warranty</p>
+                    <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Shop Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <h2 class="text-xl font-semibold mb-2">Iteams</h2>
+    <div id="productSection"
+        class="container mx-auto mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    </div>
+
+
+
+
+    <footer class="bg-gray-800 text-white p-5 mt-auto">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 E-commerce Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+</body>
+
+
+</html>
