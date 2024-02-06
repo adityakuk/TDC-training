@@ -46,6 +46,8 @@ fetch('products.json')
     .catch(error => console.error(error));
 
 
+
+
 // using for show the data Today Deals
 // fetch('TodayDeals.json')
 //     .then(response => response.json())
