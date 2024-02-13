@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  name String 
+  email String @unique
+  Shops Shop[]
+  orders orders[]
+
+  @@map("users")
+}
+
+model Shop {
+  id String @id @default(uuid())
+  name String
+  description String
+  address String
+  pincode String
+  ownerId String @map("owner_id")
+
+  user User? @relation(fields: [ownerId], references: [id])
+  items ShopItem[] 
+  @@map("shops")
+}
+
+model ShopItem {
+  id String @id @default(uuid())
+  name String
+  description String
+  price String
+  shopId String @map("shop_id")
+  shop Shop @relation(fields: [shopId], references: [id])
+
+  @@map("shop_items")
+}
+
+model orders {
+  id String @id @default(uuid())
+  subtotal_at_purchase String
+  shipping_address String
+  billing_address String
+  estimated_delivery_date String
+
+  orderId String @map("order_id")
+
+  user User @relation(fields: [orderId], references: [id])
+  orderItem orderItems[]
+}
+
+model orderItems {
+  id String @id @default(uuid())
+  price_at_purchase String 
+  quantity String
+
+  ordersId String @map("orders_id")
+  orders orders @relation(fields: [ordersId], references: [id])   
+
+}
+
+model CartItem {
+  id String @id @default(uuid())
+  price_at_purchase String
+  quantity String
+  shopItemId String @map("shop_item_id")
+  @@map("cart_items")
+}
+
