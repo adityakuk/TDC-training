@@ -62,6 +62,65 @@ app.post('/shops', async (req, res) => {
     }
 });
 
+// Shops PATCH
+app.patch('/shops/:id', async (req, res) => {
+    const prisma = new PrismaClient();
+    try {
+        const { id } = req.params;
+        const { name, description, address, pincode } = req.body;
+        const existingShop = await prisma.shop.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        if (!existingShop) {
+            return res.status(404).json({ error: "Shop not found" });
+        }
+        const updatedShop = await prisma.shop.update({
+            where: {
+                id: id
+            },
+            data: {
+                name: name || existingShop.name,
+                description: description || existingShop.description,
+                address: address || existingShop.address,
+                pincode: pincode || existingShop.pincode,
+            }
+        });
+
+        res.status(200).json(updatedShop);
+    } catch (error) {
+        console.error("Error updating shop:", error);
+        res.status(500).json({ error: "Failed to update shop" });
+    }
+});
+
+// Shops DELETE
+app.delete('/shops/:id', async (req, res) => {
+    const prisma = new PrismaClient();
+    try {
+        const { id } = req.params;
+        const existingShop = await prisma.shop.findUnique({
+            where: {
+                id: id
+            }
+        });
+        if (!existingShop) {
+            return res.status(404).json({ error: "Shop not found" });
+        }
+        await prisma.shop.delete({
+            where: {
+                id: id
+            }
+        });
+        res.status(200).json({ message: "Shop deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting shop:", error);
+        res.status(500).json({ error: "Failed to delete shop" });
+    }
+});
+
 // shop_items GET
 app.get('/shop_items', async (req, res) => {
     const prisma = new PrismaClient()
@@ -72,7 +131,6 @@ app.get('/shop_items', async (req, res) => {
     })
     res.status(200).send(allShop_items)
 })
-
 
 // shop_item POST 
 app.post('/shop_items', async (req, res) => {
@@ -91,6 +149,63 @@ app.post('/shop_items', async (req, res) => {
     } catch (error) {
         console.error("Error creating shop items:", error);
         res.status(500).json({ error: "Failed to create shop items" });
+    }
+});
+
+// Shops Items PATCH
+app.patch('/shop_items/:id', async (req, res) => {
+    const prisma = new PrismaClient();
+    try {
+        const { id } = req.params;
+        const { name, description, price } = req.body;
+        const existingShopItem = await prisma.ShopItem.findUnique({
+            where: {
+                id: id
+            }
+        });
+        if (!existingShopItem) {
+            return res.status(404).json({ error: "Shop items not found" });
+        }
+        const updatedShopItems = await prisma.ShopItem.update({
+            where: {
+                id: id
+            },
+            data: {
+                name: name || existingShopItem.name,
+                description: description || existingShopItem.description,
+                price: price || existingShopItem.price,
+            }
+        });
+
+        res.status(200).json(updatedShopItems);
+    } catch (error) {
+        console.error("Error updating shop Items:", error);
+        res.status(500).json({ error: "Failed to update shop items" });
+    }
+});
+
+// Shops Items DELETE
+app.delete('/shop_items/:id', async (req, res) => {
+    const prisma = new PrismaClient();
+    try {
+        const { id } = req.params;
+        const existingShopItems = await prisma.ShopItem.findUnique({
+            where: {
+                id: id
+            }
+        });
+        if (!existingShopItems) {
+            return res.status(404).json({ error: "Shop not found" });
+        }
+        await prisma.ShopItem.delete({
+            where: {
+                id: id
+            }
+        });
+        res.status(200).json({ message: "Shop Items deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting shop items:", error);
+        res.status(500).json({ error: "Failed to delete shop Items" });
     }
 });
 
@@ -130,9 +245,6 @@ app.post('/orders', async (req, res) => {
     }
 })
 
-
-
-
 //Order Items GET
 app.get('/order_items', async (req, res) => {
     const prisma = new PrismaClient()
@@ -148,7 +260,6 @@ app.get('/order_items', async (req, res) => {
         res.status(500).json({ error: "Failed to fetch orders" });
     }
 })
-
 
 // Order Items POST
 app.post('/order_items', async (req, res) => {
@@ -169,12 +280,6 @@ app.post('/order_items', async (req, res) => {
         res.status(500).json({ error: "Failed to create Order items" });
     }
 })
-
-// id String @id @default(uuid())
-// price_at_purchase String 
-// quantity String
-
-// ordersId String @map("orders_id")
 
 app.listen(port, () => {
     console.log('listening on port 4000')
