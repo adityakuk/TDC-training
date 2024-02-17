@@ -10,13 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+// model userRegister {
+
+// }
+
+
 model User {
   id String @id @default(uuid())
-  name String 
+  fullname String 
   email String @unique
-  Shops Shop[]
+  password String 
+  Shops Shop[] 
   orders orders[]
-
   @@map("users")
 }
 
@@ -37,7 +43,9 @@ model ShopItem {
   id String @id @default(uuid())
   name String
   description String
+  weight String
   price String
+  image String?
   shopId String @map("shop_id")
   shop Shop @relation(fields: [shopId], references: [id])
 

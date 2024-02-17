@@ -1,10 +1,13 @@
 const express = require('express')
 const { Prisma, PrismaClient } = require('@prisma/client')
+const cors = require('cors')
 
 const app = express()
 const port = 4000
 
+
 app.use(express.json())
+app.use(cors())
 
 // Users get 
 app.get('/users', async (req, res) => {
@@ -21,17 +24,17 @@ app.get('/users', async (req, res) => {
 // users post 
 app.post('/users', async (req, res) => {
     const prisma = new PrismaClient()
-    const { name, email } = req.body
+    const { fullname, email, password } = req.body
     const CreateUser = await prisma.user.create({
         data: {
-            name,
-            email
+            fullname,
+            email,
+            password
         }
     })
     res.status(201).json(CreateUser)
 })
 
-// Shops Get 
 app.get('/shops', async (req, res) => {
     const prisma = new PrismaClient()
     const allShops = await prisma.shop.findMany({
@@ -136,13 +139,13 @@ app.get('/shop_items', async (req, res) => {
 app.post('/shop_items', async (req, res) => {
     const prisma = new PrismaClient()
     try {
-        const { name, description, price, shopId } = req.body;
-        if (!name || !description || !price || !shopId) {
-            return res.status(400).json({ error: "Name, description, price, and shopId are required fields" });
+        const { name, description, weight, price, image, shopId } = req.body;
+        if (!name || !description || !weight || !price || !image || !shopId) {
+            return res.status(400).json({ error: "Name, description,weight, price, image and shopId are required fields" });
         }
         const createShopItems = await prisma.ShopItem.create({
             data: {
-                name, description, price, shopId
+                name, description, weight, price, image, shopId
             }
         });
         res.status(201).json(createShopItems);
