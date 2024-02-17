@@ -17,9 +17,9 @@ async function main() {
     await page.keyboard.press("Enter");
     await page.waitForNavigation();
 
-
     const itemDetails = await page.evaluate(() => {
         const details = [];
+
         const items = document.querySelectorAll('#content > div:nth-child(8) > div');
 
         items.forEach(item => {

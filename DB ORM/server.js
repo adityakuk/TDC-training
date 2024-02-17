@@ -35,6 +35,7 @@ app.post('/users', async (req, res) => {
     res.status(201).json(CreateUser)
 })
 
+// get shop 
 app.get('/shops', async (req, res) => {
     const prisma = new PrismaClient()
     const allShops = await prisma.shop.findMany({

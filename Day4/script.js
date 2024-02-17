@@ -1,3 +1,4 @@
+
 fetch('products.json')
     .then(response => response.json())
     .then(products => {
@@ -7,17 +8,27 @@ fetch('products.json')
 
         function displayProducts(products) {
             productSection.innerHTML = '';
+            if (products.length === 0) {
+                productSection.innerHTML = '<p class="text-center text-gray-600">No elements were found.</p>';
+                return;
+            }
             products.forEach(products => {
                 const productCard = document.createElement('div');
                 productCard.classList.add('bg-white', 'p-4', 'rounded-md', 'shadow-md', 'mb-4');
                 productCard.innerHTML = `
-          <h3 class="text-lg font-semibold mb-2">${products.name}</h3>
-          <p class="text-gray-600">Category: ${products.category}</p>
-          <p class="text-gray-600">Brand: ${products.brand}</p>
-          <p class="text-gray-600">Price: $${products.price}</p>
-          <p class="text-gray-600">Discount: $${products.discount}</p>
-          <img src="${products.image}" alt="${products.name}" class="w-200 h-200 object-cover rounded-md mt-2 mb-4">
-          <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out">Add to Cart</button>
+                <div class="bg-white rounded-md mb-4">
+                <h3 class="text-lg font-semibold mb-2">${products.name}</h3>
+                <p class="text-gray-600">Category: ${products.category}</p>
+                <p class="text-gray-600">Brand: ${products.brand}</p>
+                <p class="text-gray-600">Price: $${products.price}</p>
+                <p class="text-gray-600">Discount: $${products.discount}</p>
+                <div >
+                 <img  src="${products.image}" alt="${products.name}" class="w-200 h-200 object-cover rounded-md mt-2 mb-4 w-full h-auto">
+                </div>
+                <div class="flex justify-between">
+                 <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out self-end">Add to Cart</button>
+                </div>
+                </div>
         `;
                 productSection.appendChild(productCard);
             });
@@ -28,7 +39,6 @@ fetch('products.json')
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             bannerSection.style.display = searchTerm ? 'none' : 'block';
             specialOffersSection.style.display = searchTerm ? 'none' : 'block';
-
         }
 
         displayProducts(products);
@@ -44,6 +54,59 @@ fetch('products.json')
         });
     })
     .catch(error => console.error(error));
+
+// fetch('products.json')
+//     .then(response => response.json())
+//     .then(products => {
+//         const productSection = document.getElementById("productSection");
+//         const bannerSection = document.querySelector(".container.mx-auto.my-4");
+//         const specialOffersSection = document.querySelector(".bg-gray-200.py-4");
+
+//         function displayProducts(products) {
+//             productSection.innerHTML = '';
+//             products.forEach(products => {
+//                 const productCard = document.createElement('div');
+//                 productCard.classList.add('bg-white', 'p-4', 'rounded-md', 'shadow-md', 'mb-4');
+//                 productCard.innerHTML = `
+//                 <div class="bg-white rounded-md mb-4">
+//                 <h3 class="text-lg font-semibold mb-2">${products.name}</h3>
+//                 <p class="text-gray-600">Category: ${products.category}</p>
+//                 <p class="text-gray-600">Brand: ${products.brand}</p>
+//                 <p class="text-gray-600">Price: $${products.price}</p>
+//                 <p class="text-gray-600">Discount: $${products.discount}</p>
+//                 <div >
+//                  <img  src="${products.image}" alt="${products.name}" class="w-200 h-200 object-cover rounded-md mt-2 mb-4 w-full h-auto">
+//                 </div>
+//                 <div class="flex justify-between">
+//                  <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out self-end">Add to Cart</button>
+//                 </div>
+//                 </div>
+//         `;
+//                 productSection.appendChild(productCard);
+//             });
+//             toggleSectionsVisibility();
+//         }
+
+//         function toggleSectionsVisibility() {
+//             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+//             bannerSection.style.display = searchTerm ? 'none' : 'block';
+//             specialOffersSection.style.display = searchTerm ? 'none' : 'block';
+
+//         }
+
+//         displayProducts(products);
+
+//         document.getElementById('searchInput').addEventListener('input', function () {
+//             const searchTerm = this.value.toLowerCase();
+//             const filteredProducts = products.filter(products =>
+//                 products.name.toLowerCase().includes(searchTerm) ||
+//                 products.category.toLowerCase().includes(searchTerm) ||
+//                 products.brand.toLowerCase().includes(searchTerm)
+//             );
+//             displayProducts(filteredProducts);
+//         });
+//     })
+//     .catch(error => console.error(error));
 
 
 
