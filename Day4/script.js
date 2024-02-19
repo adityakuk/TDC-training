@@ -5,12 +5,11 @@ fetch('products.json')
         const productSection = document.getElementById("productSection");
         const bannerSection = document.querySelector(".container.mx-auto.my-4");
         const specialOffersSection = document.querySelector(".bg-gray-200.py-4");
-        // const categoriesSection = document.querySelector("categoriesSection");
 
         function displayProducts(products) {
             productSection.innerHTML = '';
             if (products.length === 0) {
-                productSection.innerHTML = '<p class="text-center text-gray-600">No elements were found.</p>';
+                productSection.innerHTML = '<p class="text-center flex justify-center text-gray-600">No elements were found.</p>';
                 return;
             }
             products.forEach(products => {
@@ -40,7 +39,6 @@ fetch('products.json')
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             bannerSection.style.display = searchTerm ? 'none' : 'block';
             specialOffersSection.style.display = searchTerm ? 'none' : 'block';
-            // categoriesSection.style.display = searchTerm ? 'none' : 'block';
         }
 
         displayProducts(products);
