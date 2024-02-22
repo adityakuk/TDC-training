@@ -1,0 +1,7 @@
+mutation DeleteBook($deleteBookId: String!) {
+  deleteBook(id: $deleteBookId) {
+    id
+    title
+    author
+  }
+}
