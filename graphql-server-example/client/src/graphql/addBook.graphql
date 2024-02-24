@@ -1,7 +1,3 @@
-mutation AddBook($input: BookInput!) {
-  addBook(input: $input) {
-    id
-    title
-    author
-  }
+mutation AddBook($author: String!, $title: String!) {
+  addBook(author: $author, title: $title)
 }

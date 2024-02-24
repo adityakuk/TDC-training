@@ -37,6 +37,29 @@ Book = __decorate([
     Entity()
 ], Book);
 export { Book };
+let Person = class Person extends BaseEntity {
+};
+__decorate([
+    PrimaryGeneratedColumn("uuid"),
+    Field(),
+    __metadata("design:type", String)
+], Person.prototype, "id", void 0);
+__decorate([
+    Column(),
+    Field(),
+    __metadata("design:type", String)
+], Person.prototype, "Name", void 0);
+__decorate([
+    Column({ nullable: true }),
+    Field({ nullable: true }),
+    __metadata("design:type", String)
+], Person.prototype, "BookId", void 0);
+Person = __decorate([
+    ObjectType(),
+    Entity()
+], Person);
+export { Person };
+// Resolver for Books
 class BookResolver {
     async getBooks() {
         return await Book.find();
@@ -92,20 +115,59 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BookResolver.prototype, "deleteBook", null);
+// Resolver for Person
+class PersonResolver {
+    async getPerson() {
+        return await Person.find();
+    }
+    async addPerson(Name) {
+        await Person.create({ Name }).save();
+        return true;
+    }
+    async UpdateBook(id, Name) {
+        const person = await Person.findOne({ where: { id } });
+        if (!person)
+            throw new Error("Book not found");
+        person.Name = Name;
+        await person.save();
+        return person;
+    }
+}
+__decorate([
+    Query(() => [Person]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PersonResolver.prototype, "getPerson", null);
+__decorate([
+    Mutation(() => Boolean),
+    __param(0, Arg("Name")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PersonResolver.prototype, "addPerson", null);
+__decorate([
+    Mutation(() => Person),
+    __param(0, Arg("id")),
+    __param(1, Arg("Name")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], PersonResolver.prototype, "UpdateBook", null);
 const AppDataSource = new DataSource({
     type: "postgres",
     url: "postgres://postgres.sjcxhjnfkobtvlcewunn:whRWXGTf3anqtFEG@aws-0-us-west-1.pooler.supabase.com:5432/postgres",
     database: "test",
     synchronize: true,
     logging: true,
-    entities: [Book],
+    entities: [Book, Person],
     subscribers: [],
     migrations: [],
 });
 await AppDataSource.initialize();
 async function myFun() {
     const schema = await buildSchema({
-        resolvers: [BookResolver],
+        resolvers: [BookResolver, PersonResolver],
     });
     const server = new ApolloServer({ schema });
     const { url } = await server.listen({ port: 5000 });

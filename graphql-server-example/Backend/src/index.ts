@@ -25,13 +25,29 @@ export class Book extends BaseEntity {
   @Field()
   author: string;
 }
+@ObjectType()
+@Entity()
+export class Person extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  @Field()
+  id: string;
 
+  @Column()
+  @Field()
+  Name: string;
+
+  @Column({nullable: true})
+  @Field({nullable: true})
+  BookId?: string;
+}
+
+
+// Resolver for Books
 class BookResolver {
   @Query(() => [Book])
   async getBooks(): Promise<Book[]> {
     return await Book.find();
   }
-
   @Mutation(() => Boolean)
   async addBook(
     @Arg("title") title: string,
@@ -39,8 +55,7 @@ class BookResolver {
   ): Promise<boolean> {
     await Book.create({ title, author }).save();
     return true;
-  }
-
+  } 
   @Mutation(() => Book)
   async UpdateBook(
     @Arg("id") id: string,
@@ -63,13 +78,41 @@ class BookResolver {
   }    
 }
 
+// Resolver for Person
+class PersonResolver {
+  @Query(() => [Person])
+  async getPerson(): Promise<Person[]> {
+    return await Person.find();
+  }
+
+  @Mutation(() => Boolean)
+  async addPerson(
+    @Arg("Name") Name: string
+  ) : Promise<Boolean> {
+    await Person.create({ Name }).save();
+    return true;
+  }
+
+    @Mutation(() => Person)
+  async UpdateBook(
+    @Arg("id") id: string,
+    @Arg("Name") Name: string,
+  ): Promise<Person> {
+    const person = await Person.findOne({ where: { id } });
+    if (!person) throw new Error("Book not found");
+    person.Name = Name;
+    await person.save();
+    return person;
+  }
+}
+
 const AppDataSource = new DataSource({
   type: "postgres",
   url: "postgres://postgres.sjcxhjnfkobtvlcewunn:whRWXGTf3anqtFEG@aws-0-us-west-1.pooler.supabase.com:5432/postgres",
   database: "test",
   synchronize: true,
   logging: true,
-  entities: [Book],
+  entities: [Book, Person],
   subscribers: [],
   migrations: [],
 });
@@ -78,7 +121,7 @@ await AppDataSource.initialize();
 
 async function myFun() {
   const schema = await buildSchema({
-    resolvers: [BookResolver],
+    resolvers: [BookResolver, PersonResolver],
   });
 
   const server = new ApolloServer({ schema });

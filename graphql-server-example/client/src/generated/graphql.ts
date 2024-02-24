@@ -24,21 +24,24 @@ export type Book = {
   title: Scalars['String']['output'];
 };
 
-export type BookInput = {
-  author: Scalars['String']['input'];
-  title: Scalars['String']['input'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
-  addBook: Book;
-  deleteBook: Book;
-  updateBook: Book;
+  UpdateBook: Book;
+  addBook: Scalars['Boolean']['output'];
+  deleteBook: Scalars['Boolean']['output'];
+};
+
+
+export type MutationUpdateBookArgs = {
+  author: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  title: Scalars['String']['input'];
 };
 
 
 export type MutationAddBookArgs = {
-  input: BookInput;
+  author: Scalars['String']['input'];
+  title: Scalars['String']['input'];
 };
 
 
@@ -46,52 +49,44 @@ export type MutationDeleteBookArgs = {
   id: Scalars['String']['input'];
 };
 
-
-export type MutationUpdateBookArgs = {
-  id: Scalars['String']['input'];
-  input: BookInput;
-};
-
 export type Query = {
   __typename?: 'Query';
-  books: Array<Book>;
+  getBooks: Array<Book>;
 };
 
 export type AddBookMutationVariables = Exact<{
-  input: BookInput;
+  author: Scalars['String']['input'];
+  title: Scalars['String']['input'];
 }>;
 
 
-export type AddBookMutation = { __typename?: 'Mutation', addBook: { __typename?: 'Book', id: string, title: string, author: string } };
+export type AddBookMutation = { __typename?: 'Mutation', addBook: boolean };
 
-export type BooksQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetBooksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type BooksQuery = { __typename?: 'Query', books: Array<{ __typename?: 'Book', id: string, title: string, author: string }> };
+export type GetBooksQuery = { __typename?: 'Query', getBooks: Array<{ __typename?: 'Book', id: string, title: string, author: string }> };
 
 export type DeleteBookMutationVariables = Exact<{
   deleteBookId: Scalars['String']['input'];
 }>;
 
 
-export type DeleteBookMutation = { __typename?: 'Mutation', deleteBook: { __typename?: 'Book', id: string, title: string, author: string } };
+export type DeleteBookMutation = { __typename?: 'Mutation', deleteBook: boolean };
 
 export type UpdateBookMutationVariables = Exact<{
-  input: BookInput;
+  author: Scalars['String']['input'];
+  title: Scalars['String']['input'];
   updateBookId: Scalars['String']['input'];
 }>;
 
 
-export type UpdateBookMutation = { __typename?: 'Mutation', updateBook: { __typename?: 'Book', id: string, title: string, author: string } };
+export type UpdateBookMutation = { __typename?: 'Mutation', UpdateBook: { __typename?: 'Book', id: string, title: string, author: string } };
 
 
 export const AddBookDocument = gql`
-    mutation AddBook($input: BookInput!) {
-  addBook(input: $input) {
-    id
-    title
-    author
-  }
+    mutation AddBook($author: String!, $title: String!) {
+  addBook(author: $author, title: $title)
 }
     `;
 export type AddBookMutationFn = Apollo.MutationFunction<AddBookMutation, AddBookMutationVariables>;
@@ -109,7 +104,8 @@ export type AddBookMutationFn = Apollo.MutationFunction<AddBookMutation, AddBook
  * @example
  * const [addBookMutation, { data, loading, error }] = useAddBookMutation({
  *   variables: {
- *      input: // value for 'input'
+ *      author: // value for 'author'
+ *      title: // value for 'title'
  *   },
  * });
  */
@@ -120,9 +116,9 @@ export function useAddBookMutation(baseOptions?: Apollo.MutationHookOptions<AddB
 export type AddBookMutationHookResult = ReturnType<typeof useAddBookMutation>;
 export type AddBookMutationResult = Apollo.MutationResult<AddBookMutation>;
 export type AddBookMutationOptions = Apollo.BaseMutationOptions<AddBookMutation, AddBookMutationVariables>;
-export const BooksDocument = gql`
-    query Books {
-  books {
+export const GetBooksDocument = gql`
+    query GetBooks {
+  getBooks {
     id
     title
     author
@@ -131,43 +127,39 @@ export const BooksDocument = gql`
     `;
 
 /**
- * __useBooksQuery__
+ * __useGetBooksQuery__
  *
- * To run a query within a React component, call `useBooksQuery` and pass it any options that fit your needs.
- * When your component renders, `useBooksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetBooksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBooksQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useBooksQuery({
+ * const { data, loading, error } = useGetBooksQuery({
  *   variables: {
  *   },
  * });
  */
-export function useBooksQuery(baseOptions?: Apollo.QueryHookOptions<BooksQuery, BooksQueryVariables>) {
+export function useGetBooksQuery(baseOptions?: Apollo.QueryHookOptions<GetBooksQuery, GetBooksQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<BooksQuery, BooksQueryVariables>(BooksDocument, options);
+        return Apollo.useQuery<GetBooksQuery, GetBooksQueryVariables>(GetBooksDocument, options);
       }
-export function useBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BooksQuery, BooksQueryVariables>) {
+export function useGetBooksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBooksQuery, GetBooksQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<BooksQuery, BooksQueryVariables>(BooksDocument, options);
+          return Apollo.useLazyQuery<GetBooksQuery, GetBooksQueryVariables>(GetBooksDocument, options);
         }
-export function useBooksSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BooksQuery, BooksQueryVariables>) {
+export function useGetBooksSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetBooksQuery, GetBooksQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<BooksQuery, BooksQueryVariables>(BooksDocument, options);
+          return Apollo.useSuspenseQuery<GetBooksQuery, GetBooksQueryVariables>(GetBooksDocument, options);
         }
-export type BooksQueryHookResult = ReturnType<typeof useBooksQuery>;
-export type BooksLazyQueryHookResult = ReturnType<typeof useBooksLazyQuery>;
-export type BooksSuspenseQueryHookResult = ReturnType<typeof useBooksSuspenseQuery>;
-export type BooksQueryResult = Apollo.QueryResult<BooksQuery, BooksQueryVariables>;
+export type GetBooksQueryHookResult = ReturnType<typeof useGetBooksQuery>;
+export type GetBooksLazyQueryHookResult = ReturnType<typeof useGetBooksLazyQuery>;
+export type GetBooksSuspenseQueryHookResult = ReturnType<typeof useGetBooksSuspenseQuery>;
+export type GetBooksQueryResult = Apollo.QueryResult<GetBooksQuery, GetBooksQueryVariables>;
 export const DeleteBookDocument = gql`
     mutation DeleteBook($deleteBookId: String!) {
-  deleteBook(id: $deleteBookId) {
-    id
-    title
-    author
-  }
+  deleteBook(id: $deleteBookId)
 }
     `;
 export type DeleteBookMutationFn = Apollo.MutationFunction<DeleteBookMutation, DeleteBookMutationVariables>;
@@ -197,8 +189,8 @@ export type DeleteBookMutationHookResult = ReturnType<typeof useDeleteBookMutati
 export type DeleteBookMutationResult = Apollo.MutationResult<DeleteBookMutation>;
 export type DeleteBookMutationOptions = Apollo.BaseMutationOptions<DeleteBookMutation, DeleteBookMutationVariables>;
 export const UpdateBookDocument = gql`
-    mutation UpdateBook($input: BookInput!, $updateBookId: String!) {
-  updateBook(input: $input, id: $updateBookId) {
+    mutation UpdateBook($author: String!, $title: String!, $updateBookId: String!) {
+  UpdateBook(author: $author, title: $title, id: $updateBookId) {
     id
     title
     author
@@ -220,7 +212,8 @@ export type UpdateBookMutationFn = Apollo.MutationFunction<UpdateBookMutation, U
  * @example
  * const [updateBookMutation, { data, loading, error }] = useUpdateBookMutation({
  *   variables: {
- *      input: // value for 'input'
+ *      author: // value for 'author'
+ *      title: // value for 'title'
  *      updateBookId: // value for 'updateBookId'
  *   },
  * });
