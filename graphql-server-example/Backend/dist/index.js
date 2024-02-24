@@ -10,113 +10,99 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Arg, Field, InputType, Mutation, ObjectType } from "type-graphql";
+import { Arg, Field, Mutation, ObjectType } from "type-graphql";
 import { ApolloServer } from "apollo-server";
 import "reflect-metadata";
-import { buildSchema, Resolver, Query } from "type-graphql";
-const books = [
-    {
-        id: "1",
-        title: "The Awakening Adi",
-        author: "Kate Chopin",
-    },
-    {
-        id: "2",
-        title: "City of Glass",
-        author: "Paul Auster",
-    },
-];
-let Book = class Book {
+import { buildSchema, Query } from "type-graphql";
+import { BaseEntity, Column, DataSource, Entity, PrimaryGeneratedColumn, } from "typeorm";
+let Book = class Book extends BaseEntity {
 };
 __decorate([
+    PrimaryGeneratedColumn("uuid"),
     Field(),
     __metadata("design:type", String)
 ], Book.prototype, "id", void 0);
 __decorate([
+    Column(),
     Field(),
     __metadata("design:type", String)
 ], Book.prototype, "title", void 0);
 __decorate([
+    Column(),
     Field(),
     __metadata("design:type", String)
 ], Book.prototype, "author", void 0);
 Book = __decorate([
-    ObjectType()
+    ObjectType(),
+    Entity()
 ], Book);
-let BookInput = class BookInput {
-};
-__decorate([
-    Field(),
-    __metadata("design:type", String)
-], BookInput.prototype, "title", void 0);
-__decorate([
-    Field(),
-    __metadata("design:type", String)
-], BookInput.prototype, "author", void 0);
-BookInput = __decorate([
-    InputType()
-], BookInput);
-let BookResolver = class BookResolver {
-    books() {
-        return books;
+export { Book };
+class BookResolver {
+    async getBooks() {
+        return await Book.find();
     }
-    addBook(input) {
-        const newBook = {
-            id: String(books.length + 1),
-            ...input,
-        };
-        books.push(newBook);
-        return newBook;
+    async addBook(title, author) {
+        await Book.create({ title, author }).save();
+        return true;
     }
-    deleteBook(id) {
-        const index = books.findIndex((book) => book.id === id);
-        if (index === -1) {
+    async UpdateBook(id, title, author) {
+        const book = await Book.findOne({ where: { id } });
+        if (!book)
             throw new Error("Book not found");
-        }
-        const deleteBook = books.splice(index, 1)[0];
-        return deleteBook;
-    }
-    updateBook(id, input) {
-        const book = books.find((book) => book.id === id);
-        if (!book) {
-            throw new Error("Book not found");
-        }
-        book.title = input.title;
-        book.author = input.author;
+        book.title = title;
+        book.author = author;
+        await book.save();
         return book;
     }
-};
+    async deleteBook(id) {
+        const book = await Book.findOne({ where: { id } });
+        if (!book)
+            throw new Error("Book not found");
+        await book.remove();
+        return true;
+    }
+}
 __decorate([
     Query(() => [Book]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Array)
-], BookResolver.prototype, "books", null);
+    __metadata("design:returntype", Promise)
+], BookResolver.prototype, "getBooks", null);
 __decorate([
-    Mutation(() => Book),
-    __param(0, Arg("input")),
+    Mutation(() => Boolean),
+    __param(0, Arg("title")),
+    __param(1, Arg("author")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [BookInput]),
-    __metadata("design:returntype", Book)
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
 ], BookResolver.prototype, "addBook", null);
 __decorate([
     Mutation(() => Book),
     __param(0, Arg("id")),
+    __param(1, Arg("title")),
+    __param(2, Arg("author")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], BookResolver.prototype, "UpdateBook", null);
+__decorate([
+    Mutation(() => Boolean),
+    __param(0, Arg("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Book)
+    __metadata("design:returntype", Promise)
 ], BookResolver.prototype, "deleteBook", null);
-__decorate([
-    Mutation(() => Book),
-    __param(0, Arg("id")),
-    __param(1, Arg("input")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, BookInput]),
-    __metadata("design:returntype", Book)
-], BookResolver.prototype, "updateBook", null);
-BookResolver = __decorate([
-    Resolver()
-], BookResolver);
+const AppDataSource = new DataSource({
+    type: "postgres",
+    url: "postgres://postgres.sjcxhjnfkobtvlcewunn:whRWXGTf3anqtFEG@aws-0-us-west-1.pooler.supabase.com:5432/postgres",
+    database: "test",
+    synchronize: true,
+    logging: true,
+    entities: [Book],
+    subscribers: [],
+    migrations: [],
+});
+await AppDataSource.initialize();
 async function myFun() {
     const schema = await buildSchema({
         resolvers: [BookResolver],
@@ -126,3 +112,82 @@ async function myFun() {
     console.log(`🚀  Server ready at: ${url}`);
 }
 myFun();
+// import { Arg, Field, InputType, Mutation, ObjectType } from "type-graphql";
+// import { ApolloServer } from "apollo-server";
+// import "reflect-metadata";
+// import { buildSchema, Resolver, Query } from "type-graphql";
+// const books = [
+//   {
+//     id: "1",
+//     title: "The Awakening Adi",
+//     author: "Kate Chopin",
+//   },
+//   {
+//     id: "2",
+//     title: "City of Glass",
+//     author: "Paul Auster",
+//   },
+// ];
+// @ObjectType()
+// class Book {
+//   @Field()
+//   id: string;
+//   @Field()
+//   title: string;
+//   @Field()
+//   author: string;
+// }
+// @InputType()
+// class BookInput {
+//   @Field()
+//   title: string;
+//   @Field()
+//   author: string;
+// }
+// @Resolver()
+// class BookResolver {
+//   @Query(() => [Book])
+//   books(): Book[] {
+//     return books;
+//   }
+//   @Mutation(() => Book)
+//   addBook(@Arg("input") input: BookInput): Book {
+//     const newBook = {
+//       id: String(books.length + 1),
+//       ...input,
+//     };
+//     books.push(newBook);
+//     return newBook;
+//   }
+//   @Mutation(() => Book)
+//   deleteBook(@Arg("id") id: string): Book | undefined {
+//     const index = books.findIndex((book) => book.id === id);
+//     if (index === -1) {
+//       throw new Error("Book not found");
+//     }
+//     const deleteBook = books.splice(index, 1)[0];
+//     return deleteBook;
+//   }
+//   @Mutation(() => Book)
+//   updateBook(
+//     @Arg("id") id: string,
+//     @Arg("input") input: BookInput
+//   ): Book | undefined {
+//     const book = books.find((book) => book.id === id);
+//     if (!book) {
+//       throw new Error("Book not found");
+//     }
+//     book.title = input.title;
+//     book.author = input.author;
+//     return book;
+//   }
+// }
+// async function myFun() {
+//   const schema = await buildSchema({
+//     resolvers: [BookResolver],
+//   });
+//   const server = new ApolloServer({ schema });
+//   const { url } = await server.listen({ port: 5000 });
+//   console.log(`🚀  Server ready at: ${url}`);
+// }
+// myFun();
