@@ -1,0 +1,11 @@
+query GetBooks {
+  getBooks {
+    id
+    title
+    author
+    persons {
+      id
+      name
+    }
+  }
+}

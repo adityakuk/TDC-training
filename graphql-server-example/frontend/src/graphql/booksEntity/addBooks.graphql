@@ -1,0 +1,3 @@
+mutation AddBook($author: String!, $title: String!) {
+  addBook(author: $author, title: $title)
+}
