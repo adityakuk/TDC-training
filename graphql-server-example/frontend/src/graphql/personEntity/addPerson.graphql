@@ -1,0 +1,3 @@
+mutation AddPerson($name: String!, $bookId: String) {
+  addPerson(name: $name, bookId: $bookId)
+}

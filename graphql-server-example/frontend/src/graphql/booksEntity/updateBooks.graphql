@@ -1,0 +1,7 @@
+mutation UpdateBook($author: String!, $title: String!, $updateBookId: String!) {
+  UpdateBook(author: $author, title: $title, id: $updateBookId) {
+    id
+    title
+    author
+  }
+}
