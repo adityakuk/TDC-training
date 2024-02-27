@@ -13,11 +13,11 @@ export default function Home() {
 
   const [tableData, setTableData] = useState<{}[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [expandedRowKey, setExpandedRowKey] = useState<number | null>(null);
+  const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
 
   useEffect(() => {
     if (data) {
-      setTableData(data.getBooks);
+      setTableData(data.getBooks.map((book, index) => ({ ...book, key: index.toString() })));
     }
   }, [data]);
 
@@ -88,7 +88,7 @@ export default function Home() {
       <p style={{ margin: 0 }}>
         {record.persons &&
           record.persons.map((person: any) => (
-            <li key={person.name}>{person.name}</li>
+            <li key={person.id}>{person.name}</li>
           ))}
       </p>
     );
@@ -110,8 +110,12 @@ export default function Home() {
             style={{ borderColor: "black" }}
             columns={columns}
             dataSource={tableData}
-            expandedRowRender={expandedRowRender}
-            expandable={{ expandedRowKeys: expandedRowKey !== null ? [expandedRowKey] : [], onExpand: handleExpandRow }}
+            expandable={{
+              expandedRowKeys: expandedRowKey !== null ? [expandedRowKey] : [],
+              onExpand: (expanded, record) => handleExpandRow(expanded, record),
+              expandedRowRender: (record) =>
+                expandedRowKey === record.key ? expandedRowRender(record) : null,
+            }}
           />
         )}
 
@@ -121,10 +125,18 @@ export default function Home() {
 
         <Modal title="Add Person" visible={isModalVisible} onCancel={handleCancel}>
           <Form name="addBookForm" onFinish={onFinish}>
-            <Form.Item name="title" label="Title" rules={[{ required: true, message: "Please input the title!" }]}>
+            <Form.Item
+              name="title"
+              label="Title"
+              rules={[{ required: true, message: "Please input the title!" }]}
+            >
               <Input />
             </Form.Item>
-            <Form.Item name="author" label="Author" rules={[{ required: true, message: "Please input the author!" }]}>
+            <Form.Item
+              name="author"
+              label="Author"
+              rules={[{ required: true, message: "Please input the author!" }]}
+            >
               <Input />
             </Form.Item>
             <Form.Item>
