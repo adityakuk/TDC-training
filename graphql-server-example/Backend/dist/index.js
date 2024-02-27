@@ -14,7 +14,7 @@ import { Arg, Field, Mutation, ObjectType } from "type-graphql";
 import { ApolloServer } from "apollo-server";
 import "reflect-metadata";
 import { buildSchema, Query } from "type-graphql";
-import { BaseEntity, Column, DataSource, Entity, PrimaryGeneratedColumn, } from "typeorm";
+import { BaseEntity, Column, DataSource, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, } from "typeorm";
 let Book = class Book extends BaseEntity {
 };
 __decorate([
@@ -24,14 +24,19 @@ __decorate([
 ], Book.prototype, "id", void 0);
 __decorate([
     Column(),
-    Field(),
+    Field(() => String),
     __metadata("design:type", String)
 ], Book.prototype, "title", void 0);
 __decorate([
-    Column(),
-    Field(),
+    Column({ nullable: true }),
+    Field(() => String),
     __metadata("design:type", String)
 ], Book.prototype, "author", void 0);
+__decorate([
+    Field(() => [Person], { nullable: true }),
+    OneToMany(() => Person, person => person.book),
+    __metadata("design:type", Array)
+], Book.prototype, "persons", void 0);
 Book = __decorate([
     ObjectType(),
     Entity()
@@ -48,12 +53,19 @@ __decorate([
     Column(),
     Field(),
     __metadata("design:type", String)
-], Person.prototype, "Name", void 0);
+], Person.prototype, "name", void 0);
 __decorate([
     Column({ nullable: true }),
-    Field({ nullable: true }),
+    Field({
+        nullable: true
+    }),
     __metadata("design:type", String)
-], Person.prototype, "BookId", void 0);
+], Person.prototype, "bookId", void 0);
+__decorate([
+    Field(() => Book, { nullable: true }),
+    ManyToOne(() => Book, book => book.persons),
+    __metadata("design:type", Book)
+], Person.prototype, "book", void 0);
 Person = __decorate([
     ObjectType(),
     Entity()
@@ -62,7 +74,11 @@ export { Person };
 // Resolver for Books
 class BookResolver {
     async getBooks() {
-        return await Book.find();
+        return await Book.find({
+            relations: {
+                persons: true
+            }
+        });
     }
     async addBook(title, author) {
         await Book.create({ title, author }).save();
@@ -78,9 +94,15 @@ class BookResolver {
         return book;
     }
     async deleteBook(id) {
-        const book = await Book.findOne({ where: { id } });
+        const book = await Book.findOne({ where: { id }, relations: ['persons'] });
         if (!book)
             throw new Error("Book not found");
+        if (book.persons) {
+            for (const person of book.persons) {
+                person.bookId = null;
+                await person.save();
+            }
+        }
         await book.remove();
         return true;
     }
@@ -118,19 +140,30 @@ __decorate([
 // Resolver for Person
 class PersonResolver {
     async getPerson() {
-        return await Person.find();
+        return await Person.find({
+            relations: {
+                book: true
+            }
+        });
     }
-    async addPerson(Name) {
-        await Person.create({ Name }).save();
+    async addPerson(name, bookId) {
+        await Person.create({ name, bookId }).save();
         return true;
     }
-    async UpdateBook(id, Name) {
+    async UpdatePerson(id, name) {
         const person = await Person.findOne({ where: { id } });
         if (!person)
-            throw new Error("Book not found");
-        person.Name = Name;
+            throw new Error("Person not found");
+        person.name = name;
         await person.save();
         return person;
+    }
+    async deletePerson(id) {
+        const person = await Person.findOne({ where: { id } });
+        if (!person)
+            throw new Error("Person not found");
+        await person.remove();
+        return true;
     }
 }
 __decorate([
@@ -141,19 +174,27 @@ __decorate([
 ], PersonResolver.prototype, "getPerson", null);
 __decorate([
     Mutation(() => Boolean),
-    __param(0, Arg("Name")),
+    __param(0, Arg("name")),
+    __param(1, Arg("bookId", { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], PersonResolver.prototype, "addPerson", null);
 __decorate([
     Mutation(() => Person),
     __param(0, Arg("id")),
-    __param(1, Arg("Name")),
+    __param(1, Arg("name")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
-], PersonResolver.prototype, "UpdateBook", null);
+], PersonResolver.prototype, "UpdatePerson", null);
+__decorate([
+    Mutation(() => Boolean),
+    __param(0, Arg("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PersonResolver.prototype, "deletePerson", null);
 const AppDataSource = new DataSource({
     type: "postgres",
     url: "postgres://postgres.sjcxhjnfkobtvlcewunn:whRWXGTf3anqtFEG@aws-0-us-west-1.pooler.supabase.com:5432/postgres",
