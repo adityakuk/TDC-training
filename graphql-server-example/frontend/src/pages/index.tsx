@@ -12,6 +12,7 @@ import {
 } from "antd";
 import { Table } from "antd";
 import {
+  Book,
   useAddBookMutation,
   useAddPersonMutation,
   useDeleteBookMutation,
@@ -26,24 +27,27 @@ import {
   EditOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
+import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [form] = Form.useForm();
+  const [form2] = Form.useForm();
   const { data, loading, error, refetch } = useGetBooksQuery();
-  const [addBook] = useAddBookMutation();
   const [deleteBook] = useDeleteBookMutation();
-  const [updateBook] = useUpdateBookMutation();
-  const [addPersonMutation] = useAddPersonMutation();
+  const [addBook, {loading: isAddBookLoading}] = useAddBookMutation();
+  const [updateBook, {loading: isUpdateBookLoading}] = useUpdateBookMutation();
+  const [addPersonMutation, {loading: isAddPersonLoading }] = useAddPersonMutation();
+  const [updatePersonMutation, {loading: isUpdatePersonLoading}] = useUpdatePersonMutation()
   const [deletePersonMutation] = useDeletePersonMutation();
-  const [updatePersonMutation] = useUpdatePersonMutation()
 
   const [tableData, setTableData] = useState<{}[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [isPersonModalVisible, setIsPersonModalVisible] = useState(false);
-  const [editedPersonName, setEditedPersonName] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [person, setPerson] = useState<{id: string, name:string} | null >(null)
 
   useEffect(() => {
     if (data) {
@@ -62,6 +66,7 @@ export default function Home() {
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedBook(null);
+    form.resetFields()
   };
 
   const onFinish = async (values: any) => {
@@ -128,19 +133,12 @@ export default function Home() {
     }
   }
 
-  const handleUpdatePerson = async (personId: string) => {
-    try {
-      const response = await updatePersonMutation({
-        variables: {
-          name: editedPersonName,
-          updatePersonId: personId,
-        }
-      })
-         console.log("Person updated successfully:", response.data);
-         setEditedPersonName("")
-    } catch (error) {
-      console.error("update person is Failed", error)
-    }
+  const handleUpdatePerson = async (person: any) => {
+    setIsEditMode(true)
+    setIsPersonModalVisible(true)
+    setPerson(person)
+    
+    form2.setFieldValue("name", person.name)
   }
 
   const handleUpdate = (record: any) => {
@@ -155,61 +153,8 @@ export default function Home() {
 
   const handleCancelAddPerson = () => {
     setIsPersonModalVisible(false);
+    form2.resetFields()
   };
-
-  const columns = [
-    {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
-    },
-    {
-      title: "Author",
-      dataIndex: "author",
-      key: "author",
-    },
-    {
-      title: "Add Person",
-      dataIndex: "person",
-      key: "person",
-      render: (_: any, record: any) => (
-        <Button
-          type="primary"
-          ghost
-          onClick={() => {
-            setSelectedBook(record);
-            setIsPersonModalVisible(true);
-          }}
-        >
-          Add Person
-        </Button>
-      ),
-    },
-    {
-      title: "Action",
-      dataIndex: "",
-      key: "",
-      render: (_: any, record: any) => (
-        <div className="flex">
-          <div>
-            <Popconfirm
-              title="Are you sure you want to delete this book?"
-              onConfirm={() => handleDelete(record)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <DeleteOutlined style={{ marginRight: 15, color: "red" }} />
-            </Popconfirm>
-          </div>
-          <div>
-            <Tooltip title="Update Book">
-              <EditOutlined onClick={() => handleUpdate(record)} />
-            </Tooltip>
-          </div>
-        </div>
-      ),
-    },
-  ];
 
   const expandedRowRender = (record: any) => {
     return (
@@ -222,7 +167,7 @@ export default function Home() {
                 <div>
                 <Tooltip title="Edit Person">
                 <EditOutlined
-                onClick={() => handleUpdatePerson(person.id)}
+                onClick={() => handleUpdatePerson(person)}
                   style={{ marginRight: '10px' }}
                   
                 />
@@ -255,7 +200,61 @@ export default function Home() {
           <Spin size="large" spinning={loading}>
             <Table
               style={{ borderColor: "black" }}
-              columns={columns}
+              columns={[
+                {
+                  title: "Title",
+                  dataIndex: "title",
+                  key: "title",
+                  sorter: (a, b) => a.title.localeCompare(b.title)
+                },
+                {
+                  title: "Author",
+                  dataIndex: "author",
+                  key: "author",
+                  sorter: (a, b) => a.title.localeCompare(b.title)
+                },
+                {
+                  title: "Add Person",
+                  dataIndex: "person",
+                  key: "person",
+                  render: (_: any, record: any) => (
+                    <Button
+                      type="primary"
+                      ghost
+                      onClick={() => {
+                        setSelectedBook(record);
+                        setIsPersonModalVisible(true);
+                      }}
+                    >
+                      Add Person
+                    </Button>
+                  ),
+                },
+                {
+                  title: "Action",
+                  dataIndex: "",
+                  key: "",
+                  render: (_: any, record: any) => (
+                    <div className="flex">
+                      <div>
+                        <Popconfirm
+                          title="Are you sure you want to delete this book?"
+                          onConfirm={() => handleDelete(record)}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <DeleteOutlined style={{ marginRight: 15, color: "red" }} />
+                        </Popconfirm>
+                      </div>
+                      <div>
+                        <Tooltip title="Update Book">
+                          <EditOutlined onClick={() => handleUpdate(record)} />
+                        </Tooltip>
+                      </div>
+                    </div>
+                  ),
+                },
+              ]}
               dataSource={tableData}
               expandable={{
                 expandedRowKeys:
@@ -263,6 +262,7 @@ export default function Home() {
                 onExpand: (expanded, record) =>
                   handleExpandRow(expanded, record),
                 expandedRowRender: (record) =>
+                  // @ts-ignore
                   expandedRowKey === record.key
                     ? expandedRowRender(record)
                     : null,
@@ -280,12 +280,14 @@ export default function Home() {
           visible={isModalVisible}
           onCancel={handleCancel}
           onOk={form.submit}
+          confirmLoading={selectedBook ? isUpdateBookLoading: isAddBookLoading}
+          
         >
-          <Form name="addBookForm" onFinish={onFinish} form={form}>
+          <Form name="addBookForm" onFinish={onFinish} form={form} validateTrigger="onBlur">
             <Form.Item
               name="title"
               label="Title"
-              rules={[{ required: true, message: "Please input the title!" }]}
+              rules={[{ required: true, message: "Please input the title!" }, {required: true, message: "Input needs to be less than 50 characters", max: 50}]}
             >
               <Input />
             </Form.Item>
@@ -296,11 +298,6 @@ export default function Home() {
             >
               <Input />
             </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                {selectedBook ? "Update" : "Add"}
-              </Button>
-            </Form.Item>
           </Form>
         </Modal>
 
@@ -308,13 +305,21 @@ export default function Home() {
           title="Add Person"
           visible={isPersonModalVisible}
           onCancel={handleCancelAddPerson}
-          footer={null}
-          okText="Add Person"
-          onOk={form.submit}
+          okText={isEditMode ? "Edit Person" : "Add Person"}
+          onOk={form2.submit}
+          confirmLoading={isEditMode ? isUpdatePersonLoading : isAddPersonLoading}
         >
           <Form
             onFinish={async (values) => {
               try {
+                if (isEditMode && person) {
+                  await updatePersonMutation({variables: {name: values.name, updatePersonId: person.id}})
+                  setIsEditMode(false)
+                  setIsPersonModalVisible(false)
+                  await refetch();
+                  return
+                }
+
                 const { data } = await addPersonMutation({
                   variables: {
                     name: values.name,
@@ -331,7 +336,7 @@ export default function Home() {
               }
             }}
             name="addPersonForm"
-            form={form}
+            form={form2}
           >
             <Form.Item
               name="name"
@@ -340,38 +345,8 @@ export default function Home() {
             >
               <Input />
             </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Add
-              </Button>
-            </Form.Item>
           </Form>
         </Modal>
-
-
-        <Modal
-          title= "Update Person"
-          visible={isModalVisible}
-          onCancel={handleCancel}
-          onOk={form.submit}
-        >
-          <Form>
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[{ required: true, message: "Please input the Name!" }]}
-            >
-              <Input />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-              Update
-              </Button>
-            </Form.Item>
-          </Form>
-        </Modal>
-
       </Card>
     </>
   );
