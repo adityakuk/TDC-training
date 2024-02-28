@@ -102,7 +102,7 @@ export type DeleteBookMutation = { __typename?: 'Mutation', deleteBook: boolean 
 export type GetBooksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBooksQuery = { __typename?: 'Query', getBooks: Array<{ __typename?: 'Book', id: string, title: string, author: string, persons?: Array<{ __typename?: 'Person', id: string, name: string }> | null }> };
+export type GetBooksQuery = { __typename?: 'Query', getBooks: Array<{ __typename?: 'Book', id: string, title: string, author: string, persons?: Array<{ __typename?: 'Person', id: string, name: string, bookId?: string | null }> | null }> };
 
 export type UpdateBookMutationVariables = Exact<{
   author: Scalars['String']['input'];
@@ -139,7 +139,7 @@ export type UpdatePersonMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePersonMutation = { __typename?: 'Mutation', UpdatePerson: { __typename?: 'Person', name: string } };
+export type UpdatePersonMutation = { __typename?: 'Mutation', UpdatePerson: { __typename?: 'Person', id: string, name: string, bookId?: string | null } };
 
 
 export const AddBookDocument = gql`
@@ -214,6 +214,7 @@ export const GetBooksDocument = gql`
     persons {
       id
       name
+      bookId
     }
   }
 }
@@ -394,7 +395,9 @@ export type GetPersonQueryResult = Apollo.QueryResult<GetPersonQuery, GetPersonQ
 export const UpdatePersonDocument = gql`
     mutation UpdatePerson($name: String!, $updatePersonId: String!) {
   UpdatePerson(name: $name, id: $updatePersonId) {
+    id
     name
+    bookId
   }
 }
     `;
