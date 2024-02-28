@@ -199,7 +199,7 @@ const AppDataSource = new DataSource({
     type: "postgres",
     url: "postgres://postgres.sjcxhjnfkobtvlcewunn:whRWXGTf3anqtFEG@aws-0-us-west-1.pooler.supabase.com:5432/postgres",
     database: "test",
-    synchronize: true,
+    synchronize: false,
     logging: true,
     entities: [Book, Person],
     subscribers: [],
